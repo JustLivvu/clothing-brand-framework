@@ -50,11 +50,28 @@ const menuCategories = [
     "Sale",
 ]
 
+const userModalState = ref<'signin' | 'signup' | 'recovery'>('signin')
+const recoveryEmail = ref("")
+const isCodeSent = ref(false)
+const recoveryCode = ref("")
+const newPassword = ref("")
+const signUpEmail = ref("")
+const signUpPassword = ref("")
+const signUpName = ref("")
+
 const closeAll = () => {
     isSearchOpen.value = false
     isUserOpen.value = false
     isCartOpen.value = false
     isMenuOpen.value = false
+    userModalState.value = 'signin'
+    isCodeSent.value = false
+    recoveryEmail.value = ""
+    recoveryCode.value = ""
+    newPassword.value = ""
+    signUpEmail.value = ""
+    signUpPassword.value = ""
+    signUpName.value = ""
 }
 
 const toggleSearch = () => {
@@ -89,6 +106,20 @@ const cartTotal = () => {
     return cartItems.value
         .reduce((total, item) => total + item.price, 0)
         .toFixed(2)
+}
+
+const handleSendCode = () => {
+    if (recoveryEmail.value) {
+        isCodeSent.value = true
+        alert(`Verification code sent to ${recoveryEmail.value}!`)
+    }
+}
+
+const handleResetPassword = () => {
+    if (recoveryCode.value && newPassword.value) {
+        alert("Password reset successfully!")
+        closeAll()
+    }
 }
 </script>
 
@@ -243,7 +274,6 @@ const cartTotal = () => {
             </aside>
         </Transition>
 
-
         <Transition name="drawer-right">
             <aside
                 v-if="isCartOpen"
@@ -279,7 +309,6 @@ const cartTotal = () => {
                     </RouterLink>
                 </div>
 
-                <!-- ITEMS -->
                 <div
                     v-else
                     class="cart_content"
@@ -358,8 +387,6 @@ const cartTotal = () => {
             </aside>
         </Transition>
 
-
-        <!-- USER MODAL -->
         <Transition name="modal">
             <div
                 v-if="isUserOpen"
@@ -374,51 +401,169 @@ const cartTotal = () => {
                     <Icon icon="material-symbols:close" />
                 </button>
 
-                <div class="user_modal_content">
+                <div
+                    v-if="userModalState === 'signin'"
+                    class="user_modal_content"
+                >
                     <div class="modal_logo">
                         <Icon icon="mingcute:user-1-line" />
                     </div>
-                    <span class="modal_small_title">
-                        WELCOME BACK
-                    </span>
-                    <h2>
-                        Sign in to your account
-                    </h2>
-                    <p>
-                        Access your orders, wishlist and saved items.
-                    </p>
+                    <span class="modal_small_title">WELCOME BACK</span>
+                    <h2>Sign in to your account</h2>
+                    <p>Access your orders, wishlist and saved items.</p>
                     <form @submit.prevent>
-                        <label>
-                            Email
-                        </label>
+                        <label>Email</label>
+                        <input type="email" placeholder="Your email" />
+                        <label>Password</label>
+                        <input type="password" placeholder="Your password" />
+                        <div class="forgot_password">
+                            <button
+                                type="button"
+                                class="link_button"
+                                @click="userModalState = 'recovery'"
+                            >
+                                Forgot password?
+                            </button>
+                        </div>
+                        <button class="login_button">SIGN IN</button>
+                    </form>
+                    <div class="register_text">
+                        Don't have an account?
+                        <button
+                            type="button"
+                            class="link_button link_button--bold"
+                            @click="userModalState = 'signup'"
+                        >
+                            Create new account
+                        </button>
+                    </div>
+                </div>
+
+                <div
+                    v-else-if="userModalState === 'signup'"
+                    class="user_modal_content"
+                >
+                    <div class="modal_logo">
+                        <Icon icon="mingcute:user-add-line" />
+                    </div>
+                    <span class="modal_small_title">JOIN US</span>
+                    <h2>Create an account</h2>
+                    <p>Start shopping and track your orders with ease.</p>
+                    <form @submit.prevent>
+                        <label>Full Name</label>
                         <input
+                            v-model="signUpName"
+                            type="text"
+                            placeholder="Your full name"
+                        />
+                        <label>Email</label>
+                        <input
+                            v-model="signUpEmail"
                             type="email"
                             placeholder="Your email"
                         />
-                        <label>
-                            Password
-                        </label>
+                        <label>Password</label>
                         <input
+                            v-model="signUpPassword"
                             type="password"
-                            placeholder="Your password"
+                            placeholder="Create a password"
                         />
-                        <div class="forgot_password">
-                            <RouterLink to="#">
-                                Forgot password?
-                            </RouterLink>
-                        </div>
-                        <button class="login_button">
-                            SIGN IN
+                        <button class="login_button" style="margin-top:20px">
+                            CREATE ACCOUNT
                         </button>
                     </form>
-
                     <div class="register_text">
-                        Don't have an account?
-                        <RouterLink to="#">
-                            Create one
-                        </RouterLink>
+                        Already have an account?
+                        <button
+                            type="button"
+                            class="link_button link_button--bold"
+                            @click="userModalState = 'signin'"
+                        >
+                            Sign in
+                        </button>
+                    </div>
+                </div>
+
+                <div
+                    v-else-if="userModalState === 'recovery'"
+                    class="user_modal_content"
+                >
+                    <div class="modal_logo">
+                        <Icon icon="material-symbols:lock-reset-outline" />
                     </div>
 
+                    <template v-if="!isCodeSent">
+                        <span class="modal_small_title">ACCOUNT RECOVERY</span>
+                        <h2>Forgot your password?</h2>
+                        <p>Enter your email and we'll send you a verification code.</p>
+                        <form @submit.prevent="handleSendCode">
+                            <label>Email</label>
+                            <input
+                                v-model="recoveryEmail"
+                                type="email"
+                                placeholder="Your email"
+                                required
+                            />
+                            <button
+                                class="login_button"
+                                style="margin-top:20px"
+                            >
+                                SEND CODE
+                            </button>
+                        </form>
+                    </template>
+
+                    <template v-else>
+                        <span class="modal_small_title">CHECK YOUR EMAIL</span>
+                        <h2>Enter the code</h2>
+                        <p>
+                            We sent a code to
+                            <strong>{{ recoveryEmail }}</strong>.
+                            Use it to set a new password.
+                        </p>
+                        <form @submit.prevent="handleResetPassword">
+                            <label>Verification Code</label>
+                            <input
+                                v-model="recoveryCode"
+                                type="text"
+                                placeholder="6-digit code"
+                                required
+                            />
+                            <label>New Password</label>
+                            <input
+                                v-model="newPassword"
+                                type="password"
+                                placeholder="New password"
+                                required
+                            />
+                            <button
+                                class="login_button"
+                                style="margin-top:20px"
+                            >
+                                RESET PASSWORD
+                            </button>
+                        </form>
+                        <div class="register_text">
+                            Didn't receive the code?
+                            <button
+                                type="button"
+                                class="link_button link_button--bold"
+                                @click="handleSendCode"
+                            >
+                                Resend
+                            </button>
+                        </div>
+                    </template>
+
+                    <div class="register_text" style="margin-top:14px">
+                        <button
+                            type="button"
+                            class="link_button"
+                            @click="userModalState = 'signin'"
+                        >
+                            ← Back to sign in
+                        </button>
+                    </div>
                 </div>
 
             </div>
@@ -426,7 +571,6 @@ const cartTotal = () => {
 
     </header>
 </template>
-
 
 <style scoped>
 
@@ -842,7 +986,7 @@ const cartTotal = () => {
     letter-spacing: 1.2px;
     cursor: pointer;
     transition: 0.2s;
-    
+
 }
 
 .checkout_button:hover {
@@ -1014,7 +1158,8 @@ const cartTotal = () => {
     text-align: right;
 }
 
-.forgot_password a {
+.forgot_password a,
+.forgot_password .link_button {
     color: #666;
     font-size: 10px;
 }
@@ -1045,6 +1190,29 @@ const cartTotal = () => {
 }
 
 .register_text a {
+    color: #000;
+    font-weight: 500;
+}
+
+.link_button {
+    display: inline;
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    color: #666;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.link_button:hover {
+    color: #000;
+}
+
+.link_button--bold {
     color: #000;
     font-weight: 500;
 }
