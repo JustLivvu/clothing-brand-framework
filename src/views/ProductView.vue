@@ -2,6 +2,7 @@
     import { Icon } from "@iconify/vue";
     import Announcement from "../components/announcement.vue";
     import Navbar from "../components/navbar.vue";
+    import Footer from "../components/footer.vue"
 </script>
 <template>
     <div class="product_main">
@@ -51,6 +52,7 @@
                 </div>
             </div>
         </div>
+        <Footer/>
     </div>
 </template>
 <style lang="css" scoped>
