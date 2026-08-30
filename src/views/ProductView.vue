@@ -41,14 +41,12 @@
                 <button class="add_to_bag_btn">ADD TO BAG</button>
                 <div class="long_desc">
                     <span>
-T-shirt with crewneck is crafted from fluid cotton jersey, featuring a seasonal logo print on the chest. Cut to a regular fit and hip length.
-Product details
-<br><br>
-Product information
-<br>
-    Shell: 50% Cotton,<br> 50% Viscose
-
-
+                        T-shirt with crewneck is crafted from fluid cotton jersey, featuring a seasonal logo print on the chest. Cut to a regular fit and hip length.
+                        Product details
+                        <br><br>
+                        Product information
+                        <br>
+                        Shell: 50% Cotton,<br> 50% Viscose
                     </span>
                 </div>
             </div>
