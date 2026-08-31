@@ -55,5 +55,11 @@
         gap: 5px;
         align-items: center;
         justify-content: center;
+        transition: 0.2s;
+        border: 1px solid black;
+    }
+    .admin_login_box button:hover {
+        background-color: white;
+        color: black;
     }
 </style>
